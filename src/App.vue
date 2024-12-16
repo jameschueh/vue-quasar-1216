@@ -1,30 +1,27 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view />
+  <q-layout view="lHh Lpr lFf">
+    <cq-header
+      :leftDrawerOpen="leftDrawerOpen"
+      @switchMenu="switchMenu"
+    ></cq-header>
+    <slide-menu :leftDrawerOpen="leftDrawerOpen"></slide-menu>
+
+    <q-page-container>
+      <router-view></router-view>
+    </q-page-container>
+  </q-layout>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script setup lang="ts">
+import SlideMenu from "./views/layout/SlideMenu.vue";
+import CqHeader from "./views/layout/CqHeader.vue";
+import { ref } from "vue";
+import { RouterView } from "vue-router";
 
-nav {
-  padding: 30px;
+const leftDrawerOpen = ref(false);
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
+const switchMenu = () => {
+  console.log("menu");
+  leftDrawerOpen.value = !leftDrawerOpen.value;
+};
+</script>
