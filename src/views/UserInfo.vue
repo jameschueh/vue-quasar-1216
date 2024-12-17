@@ -6,7 +6,7 @@
         <div class="text-h6">用戶資訊</div>
         <q-separator />
         <q-list>
-          <q-item v-for="(user, index) in users" :key="index">
+          <q-item v-for="(user, index) in userList" :key="index">
             <q-item-section>
               <div class="text-body1">{{ user.name }}</div>
               <div class="text-caption">{{ user.email }}</div>
@@ -54,10 +54,12 @@
     </q-dialog>
   </q-page>
 </template>
+
 <script setup lang="ts">
 import { ref } from "vue";
 import axios from "axios";
 import { useRouter } from "vue-router";
+import apiservice from "../utils/ApiService";
 
 // 定義用戶資料的 TypeScript 類型
 interface User {
@@ -66,18 +68,33 @@ interface User {
   email: string;
 }
 
+interface UserList {
+  userList: UserList[];
+}
+
 const router = useRouter();
-const users = ref<User[]>([]);
+// const users = ref<User[]>([]);
 const isEditing = ref(false);
 const currentUser = ref<User>({ id: 0, name: "", email: "" });
+const userList = ref([] as User[]);
 
 // 從 API 加載用戶資料
+// const fetchUsers = async () => {
+//   try {
+//     const response = await axios.get<User[]>("/api/users.json");
+//     users.value = response.data;
+//   } catch (error) {
+//     console.error("帶錯誤處理的 API 請求錯誤:", error);
+//   }
+// };
+
 const fetchUsers = async () => {
-  try {
-    const response = await axios.get<User[]>("/api/users.json");
-    users.value = response.data;
-  } catch (error) {
-    console.error("帶錯誤處理的 API 請求錯誤:", error);
+  // 使用背景錯誤處理
+  const data = await apiservice.fetchApiWithoutPromise<{ userList: User[] }>(
+    "/api/users.json"
+  );
+  if (data?.userList) {
+    userList.value = data.userList;
   }
 };
 
@@ -89,7 +106,7 @@ const editUser = (user: User) => {
 
 // 更新用戶資訊
 const updateUser = () => {
-  const updatedUser = users.value.find((u) => u.id === currentUser.value.id);
+  const updatedUser = userList.value.find((u) => u.id === currentUser.value.id);
   if (updatedUser) {
     updatedUser.name = currentUser.value.name;
     updatedUser.email = currentUser.value.email;
@@ -99,9 +116,9 @@ const updateUser = () => {
 
 // 刪除用戶
 const removeUser = (user: User) => {
-  const index = users.value.indexOf(user);
+  const index = userList.value.indexOf(user);
   if (index > -1) {
-    users.value.splice(index, 1);
+    userList.value.splice(index, 1);
   }
 };
 

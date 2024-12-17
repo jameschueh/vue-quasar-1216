@@ -5,32 +5,6 @@
       <div class="text-h6">歡迎來到我們的系統！</div>
     </q-banner>
 
-    <!-- 主要功能區塊 -->
-    <div class="q-gutter-md">
-      <div class="row">
-        <div
-          class="col-12 col-md-6"
-          v-for="feature in features"
-          :key="feature.id"
-        >
-          <q-card>
-            <q-card-section>
-              <div class="text-h6">{{ feature.name }}</div>
-              <p>{{ feature.description }}</p>
-            </q-card-section>
-            <q-card-actions>
-              <q-btn
-                label="查看詳細"
-                color="primary"
-                flat
-                @click="goToFeature(feature.id)"
-              />
-            </q-card-actions>
-          </q-card>
-        </div>
-      </div>
-    </div>
-
     <!-- 最新資訊區塊 -->
     <div class="q-mt-md">
       <q-card>
@@ -38,7 +12,7 @@
           <div class="text-h6">最新資訊</div>
           <q-separator />
           <q-list>
-            <q-item v-for="news in newsList" :key="news.title" clickable>
+            <q-item v-for="news in newsList" :key="news.id" clickable>
               <q-item-section>
                 <div class="text-body1">{{ news.title }}</div>
                 <div class="text-caption">{{ news.date }}</div>
@@ -51,13 +25,13 @@
 
     <!-- 活動區域模塊 -->
     <div class="q-mt-md">
-      <q-card>
-        <q-card-section v-if="eventDetails">
-          <div class="text-h6">聖誕節活動</div>
+      <q-card v-for="event in events" :key="event.id" class="q-mb-md">
+        <q-card-section>
+          <div class="text-h6">{{ event.title }}</div>
           <q-separator />
           <div>
-            <p>日期: {{ eventDetails.date }}</p>
-            <p>描述: {{ eventDetails.description }}</p>
+            <p>日期: {{ event.date }}</p>
+            <p>描述: {{ event.description }}</p>
             <q-btn label="了解更多" color="primary" flat />
             <q-btn label="參加活動" color="secondary" flat />
           </div>
@@ -69,78 +43,62 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import axios from "axios";
-
-// 定義用戶資料的 TypeScript 類型
-interface User {
-  id: number;
-  name: string;
-  email: string;
-}
+import apiservice from "@/utils/ApiService";
 
 interface News {
+  id: number;
   title: string;
   date: string;
 }
 
 interface Event {
+  id: number;
+  title: string;
   date: string;
   description: string;
 }
 
+interface NewsResponse {
+  newsList: News[];
+}
+
+interface EventResponse {
+  eventList: Event[];
+}
+
 export default defineComponent({
   setup() {
-    const user = ref<User | null>(null);
     const newsList = ref<News[]>([]);
-    const eventDetails = ref<Event>();
+    const events = ref<Event[]>([]);
 
+    // 加載最新資訊
     const fetchNewsList = async () => {
-      try {
-        const response = await axios.get<News[]>("/api/news.json");
-        newsList.value = response.data;
-      } catch (error) {
-        console.error("帶錯誤處理的 API 請求錯誤:", error);
+      const data = await apiservice.fetchApiWithoutPromise<NewsResponse>(
+        "/api/news.json"
+      );
+      if (data?.newsList) {
+        newsList.value = data.newsList;
       }
     };
 
+    // 加載活動資訊
     const fetchEventDetails = async () => {
-      try {
-        const response = await axios.get<Event>("/api/fetchEventDetails.json");
-        eventDetails.value = response.data;
-      } catch (error) {
-        console.error("帶錯誤處理的 API 請求錯誤:", error);
+      const data = await apiservice.fetchApiWithoutPromise<EventResponse>(
+        "/api/events.json"
+      );
+      if (data?.eventList) {
+        events.value = data.eventList;
       }
     };
 
-    // Fetch news and event details on component load
+    // 在組件掛載時加載資料
     fetchNewsList();
     fetchEventDetails();
 
     return {
-      user,
       newsList,
-      eventDetails,
+      events,
     };
   },
 });
 </script>
-
-<style scoped>
-.q-banner {
-  margin-bottom: 16px;
-}
-.row {
-  display: flex;
-  flex-wrap: wrap;
-}
-.col-12 {
-  width: 100%;
-}
-.col-md-6 {
-  width: 48%;
-  margin-right: 4%;
-}
-.q-card {
-  min-height: 200px;
-}
-</style>

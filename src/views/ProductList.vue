@@ -64,7 +64,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import axios from "axios";
+import apiservice from "../utils/ApiService";
 
 // 定義產品資料的類型
 interface Product {
@@ -80,11 +80,11 @@ const products = ref<Product[]>([]);
 
 // 從 API 加載產品資料
 const fetchProducts = async () => {
-  try {
-    const response = await axios.get<Product[]>("/api/products.json");
-    products.value = response.data;
-  } catch (error) {
-    console.error("無法加載產品資料:", error);
+  const data = await apiservice.fetchApiWithoutPromise<{
+    productList: Product[];
+  }>("/api/products.json");
+  if (data?.productList) {
+    products.value = data.productList;
   }
 };
 
