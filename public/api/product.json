@@ -1,0 +1,45 @@
+[
+    {
+      "id": 1,
+      "name": "筆記型電腦",
+      "price": 29999,
+      "category": "電子產品",
+      "inStock": true
+    },
+    {
+      "id": 2,
+      "name": "冬季外套",
+      "price": 1999,
+      "category": "服飾",
+      "inStock": false
+    },
+    {
+      "id": 3,
+      "name": "廚房用具",
+      "price": 999,
+      "category": "家居用品",
+      "inStock": true
+    },
+    {
+      "id": 4,
+      "name": "智慧型手機",
+      "price": 14999,
+      "category": "電子產品",
+      "inStock": true
+    },
+    {
+      "id": 5,
+      "name": "辦公室椅",
+      "price": 4599,
+      "category": "家居用品",
+      "inStock": false
+    },
+    {
+      "id": 6,
+      "name": "人體工學辦公椅",
+      "price": 12999,
+      "category": "家居用品",
+      "inStock": false
+    }
+  ]
+  

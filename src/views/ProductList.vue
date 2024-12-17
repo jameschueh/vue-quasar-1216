@@ -62,80 +62,49 @@
   </q-page>
 </template>
 
-<script>
-import { ref } from "vue";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
-export default {
-  setup() {
-    // 模擬產品數據
-    const products = ref([
-      {
-        id: 1,
-        name: "筆記型電腦",
-        price: 29999,
-        category: "電子產品",
-        inStock: true,
-      },
-      {
-        id: 2,
-        name: "冬季外套",
-        price: 1999,
-        category: "服飾",
-        inStock: false,
-      },
-      {
-        id: 3,
-        name: "廚房用具",
-        price: 999,
-        category: "家居用品",
-        inStock: true,
-      },
-      {
-        id: 4,
-        name: "智慧型手機",
-        price: 14999,
-        category: "電子產品",
-        inStock: true,
-      },
-      {
-        id: 5,
-        name: "辦公室椅",
-        price: 4599,
-        category: "家居用品",
-        inStock: false,
-      },
-      {
-        id: 6,
-        name: "人體工學辦公椅",
-        price: 12999,
-        category: "家居用品",
-        inStock: false,
-      },
-    ]);
+// 定義產品資料的類型
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+  inStock: boolean;
+}
 
-    // 新增產品
-    const addProduct = () => {
-      alert("新增產品功能尚未實作！");
-    };
+// 定義產品資料變數
+const products = ref<Product[]>([]);
 
-    // 編輯產品
-    const editProduct = (id) => {
-      alert(`正在編輯產品 ID: ${id}`);
-    };
-
-    // 刪除產品
-    const deleteProduct = (id) => {
-      alert(`產品 ID: ${id} 已刪除`);
-    };
-
-    return {
-      products,
-      addProduct,
-      editProduct,
-      deleteProduct,
-    };
-  },
+// 從 API 加載產品資料
+const fetchProducts = async () => {
+  try {
+    const response = await axios.get<Product[]>("/api/products.json");
+    products.value = response.data;
+  } catch (error) {
+    console.error("無法加載產品資料:", error);
+  }
 };
+
+// 新增產品
+const addProduct = () => {
+  alert("新增產品功能尚未實作！");
+};
+
+// 編輯產品
+const editProduct = (id: number) => {
+  alert(`正在編輯產品 ID: ${id}`);
+};
+
+// 刪除產品
+const deleteProduct = (id: number) => {
+  alert(`產品 ID: ${id} 已刪除`);
+};
+
+// 載入產品資料
+onMounted(fetchProducts);
 </script>
 
 <style scoped>
